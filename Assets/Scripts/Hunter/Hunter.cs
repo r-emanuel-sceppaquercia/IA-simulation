@@ -4,6 +4,7 @@ using UnityEngine;
 public class Hunter : MonoBehaviour, IMove
 {
     public HunterModel HunterModel { get; private set; }
+    public HunterWeaponController hunterWeapon { get; private set; }
 
     private QuestionNode questionEnergy;
     private QuestionNode questionSeeEnemy;
@@ -21,7 +22,8 @@ public class Hunter : MonoBehaviour, IMove
 
     private void Awake()
     {
-        this.HunterModel = new HunterModel(100, 100);
+        this.HunterModel = GetComponent<HunterModel>();
+        this.hunterWeapon = GetComponent<HunterWeaponController>();
     }
 
     private void Start()
@@ -31,7 +33,7 @@ public class Hunter : MonoBehaviour, IMove
         actionRecharge = new ActionNode(Recharge);
         actionShoot = new ActionNode(Shoot);
 
-        questionHasBullet = new QuestionNode(HunterModel.HasAmmo, actionShoot, actionRecharge);
+        questionHasBullet = new QuestionNode(hunterWeapon.HasAmmo, actionShoot, actionRecharge);
         questionSeeEnemy = new QuestionNode(() => false, questionHasBullet, actionPatrol);
         questionEnergy = new QuestionNode(HunterModel.OutOfEnergy, questionSeeEnemy, actionRest);
 

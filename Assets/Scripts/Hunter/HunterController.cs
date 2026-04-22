@@ -6,7 +6,7 @@ public class HunterController : MonoBehaviour
     public HunterView View { get; private set; }
     public HunterNavmesh Navmesh { get; private set; }
     public HunterLOS LineOfSight { get; private set; }
-    public HunterAttackController AttackController { get; private set; }
+    public HunterWeaponController Weapon { get; private set; }
 
     private void Awake()
     {
@@ -14,6 +14,6 @@ public class HunterController : MonoBehaviour
         Navmesh = GetComponent<HunterNavmesh>();
         View = GetComponent<HunterView>();
         LineOfSight = GetComponent<HunterLOS>();
-        AttackController = GetComponent<HunterAttackController>();
+        Weapon = GetComponent<HunterWeaponController>();
     }
 }

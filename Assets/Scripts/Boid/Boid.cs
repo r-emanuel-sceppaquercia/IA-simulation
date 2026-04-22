@@ -2,10 +2,6 @@ using UnityEngine;
 
 public class Boid : MonoBehaviour, IMove
 {
-    public void Move(Vector3 dir)
-    {
-        throw new System.NotImplementedException();
-    }
 
     void Start()
     {
@@ -13,6 +9,11 @@ public class Boid : MonoBehaviour, IMove
     }
 
     void Update()
+    {
+        transform.position += transform.forward * 5f * Time.deltaTime;
+    }
+
+    public void Move(Vector3 dir)
     {
 
     }

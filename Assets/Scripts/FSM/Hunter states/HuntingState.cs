@@ -47,26 +47,23 @@ public class HuntingState<T> : States<T>
         if (currentTarget == null)
         {
             currentTarget = hunterController.LineOfSight.GetClosestTarget();
-            hunterController.AttackController.ResetShootStats();
+            hunterController.Weapon.ResetShootStats();
         }
         else
         {
             // Lock target and aim
-            hunterController.AttackController.AimAt(currentTarget);
-            hunterController.AttackController.AimDelay();
+            hunterController.Weapon.AimAt(currentTarget);
+            hunterController.Weapon.AimDelay();
         }
 
-
-        // Wait a couple of seconds to aim
-
         // If we are out of couldown and have ammo
-        if (hunterController.AttackController.CanShot() && hunterController.Model.HasAmmo())
+        if (hunterController.Weapon.CanShoot() && hunterController.Weapon.HasAmmo())
         {
             Debug.Log("Shot to the target");
 
-            //hunterController.AttackController.Shoot();
-            hunterController.Model.UseAmmo();
+            hunterController.Weapon.Shoot();
             hunterController.Model.ConsumeEnergy(20);
+            hunterController.View.ShootAnimation();
 
             currentTarget = null;
         }
@@ -83,7 +80,7 @@ public class HuntingState<T> : States<T>
         hunterController.View.HuntingAnimation(false);
 
         // Reload gun
-        hunterController.Model.Reload();
+        hunterController.Weapon.Reload();
     }
 
     private void CheckStateTransition()
@@ -94,9 +91,7 @@ public class HuntingState<T> : States<T>
 
         // If there is no more enemies in range, change to patrol state
         if (!hunterController.LineOfSight.EnemiesInRange())
-        {
             hunterFSM.Transition(patrolInput);
-        }
     }
 
 }

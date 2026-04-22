@@ -7,6 +7,8 @@ public class HunterView : MonoBehaviour
     [SerializeField] private GameObject campfire;
     [SerializeField] private GameObject exclamationSign;
 
+    [SerializeField] private ParticleSystem muzzleFlash;
+
     [SerializeField] private GameObject body;
     private Material bodyMaterial;
 
@@ -34,7 +36,9 @@ public class HunterView : MonoBehaviour
     }
     public void ShootAnimation()
     {
-        animator.SetTrigger("shoot");
+        //animator.SetTrigger("shoot");
+        print("Playing particle system fire effect");
+        muzzleFlash.Play();
     }
     public void RechargeAnimation()
     {

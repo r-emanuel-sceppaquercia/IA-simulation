@@ -4,21 +4,15 @@ public class HunterModel : MonoBehaviour
 {
     [SerializeField] private float hp;
     [SerializeField] private float energy;
-    [SerializeField] private int ammo;
+
 
     [SerializeField] private float maxEnergy = 100;
-    [SerializeField] private int maxAmmo = 2;
 
     public HunterModel(float hp, float energy)
     {
         this.hp = hp;
         this.energy = energy;
-        ammo = maxAmmo;
     }
-
-    public bool HasAmmo() => ammo > 0;
-    public void UseAmmo() => ammo--;
-    public void Reload() => ammo = maxAmmo;
 
     public bool IsAlive() => hp > 0;
     public void TakeDamage(float damage) => hp -= damage;
