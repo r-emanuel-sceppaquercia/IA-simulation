@@ -21,7 +21,6 @@ public class HunterWeaponController : MonoBehaviour, IWeapon
 
     private ISteering pursuit;
     private ISteering seek;
-    private ISteering weaponSeek;
 
     public bool HasAmmo() => ammo > 0;
     public void UseAmmo() => ammo--;

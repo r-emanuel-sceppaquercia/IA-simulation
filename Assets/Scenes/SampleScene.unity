@@ -25861,7 +25861,7 @@ MonoBehaviour:
   weapon: {fileID: 1927908649}
   firePoint: {fileID: 1453702967}
   bulletPrefab: {fileID: 6535213585283252499, guid: 6c102ec6fbb81844eb34df42657a5c4f, type: 3}
-  bulletSpeed: 50
+  bulletSpeed: 30
   bulletDamage: 10
 --- !u!95 &1330745064
 Animator:

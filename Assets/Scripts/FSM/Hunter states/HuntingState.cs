@@ -30,8 +30,6 @@ public class HuntingState<T> : States<T>
     {
         Debug.Log("Hunting awake");
 
-        //steering = new Seek(from, target);
-
         hunterController.View.ChangeMaterialColor(Color.red);
 
         // Change to hunting anim
