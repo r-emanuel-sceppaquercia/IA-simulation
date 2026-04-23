@@ -23,9 +23,19 @@ public class HunterModel : MonoBehaviour
 
     public void ConsumeEnergy(float energy)
     {
-        this.energy -= energy * Time.deltaTime;
+        ConsumeEnergy(energy, true);
+    }
 
-        //Debug.Log("Energy: " + this.energy);
+    public void ConsumeEnergy(float energy, bool everyFrame)
+    {
+        if (everyFrame)
+        {
+            this.energy -= energy * Time.deltaTime;
+        }
+        else
+        {
+            this.energy -= energy;
+        }
 
         if (this.energy <= 0)
             this.energy = 0;

@@ -28,6 +28,12 @@ public class LineOfSight
         foreach (Collider target in targetsInRadius)
         {
             Transform targetTransform = target.transform;
+
+
+            var damageable = targetTransform.GetComponent<IDamageable>();
+            if (damageable == null || !damageable.IsAlive) continue;
+
+
             Vector3 dir = (targetTransform.position - transform.position).normalized;
 
             if (Vector3.Angle(transform.forward, dir) < angle / 2)

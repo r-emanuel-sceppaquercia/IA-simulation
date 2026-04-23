@@ -23,7 +23,7 @@ public class PatrolState<T> : States<T>
     {
         Debug.Log("Patrol awake");
 
-        DOVirtual.DelayedCall(0.3f, () =>
+        DOVirtual.DelayedCall(0.5f, () =>
         {
             hunterController.Navmesh.ResumePatrolling();
             hunterController.View.ChangeMaterialColor(Color.green);

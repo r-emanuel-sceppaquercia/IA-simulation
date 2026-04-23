@@ -16,7 +16,12 @@ public class HunterWeaponController : MonoBehaviour, IWeapon
 
     [SerializeField] private Transform firePoint;
     [SerializeField] private GameObject bulletPrefab;
-    [SerializeField] private float bulletSpeed = 20f;
+    [SerializeField] private float bulletSpeed = 50f;
+    [SerializeField] private float bulletDamage = 10f;
+
+    private ISteering pursuit;
+    private ISteering seek;
+    private ISteering weaponSeek;
 
     public bool HasAmmo() => ammo > 0;
     public void UseAmmo() => ammo--;
@@ -24,10 +29,16 @@ public class HunterWeaponController : MonoBehaviour, IWeapon
     public bool CanShoot() { return hasShot; }
     public void SetCanShoot(bool hasShot) => this.hasShot = hasShot;
 
+    private void Update()
+    {
+        Debug.DrawRay(firePoint.position, firePoint.forward * 50f, Color.red);
+        Debug.DrawRay(transform.position, transform.forward * 50f, Color.magenta);
+    }
+
     public void Shoot()
     {
         var bullet = Instantiate(bulletPrefab, firePoint.position, firePoint.rotation);
-        bullet.GetComponent<Bullet>().Init(firePoint.forward, bulletSpeed);
+        bullet.GetComponent<Bullet>().Init(pursuit.GetDir(), bulletSpeed, bulletDamage);
 
         UseAmmo();
         ResetShootStats();
@@ -48,17 +59,20 @@ public class HunterWeaponController : MonoBehaviour, IWeapon
 
     public void AimAt(Transform target)
     {
-        Vector3 direction = (target.position - transform.position).normalized;
-        direction.y = 0;
+        Vector3 bodyDir = seek.GetDir();
+        bodyDir.y = 0;
 
-        if (direction == Vector3.zero)
-            return;
+        Quaternion bodyRot = Quaternion.LookRotation(bodyDir);
+        transform.rotation = Quaternion.RotateTowards(transform.rotation, bodyRot, aimRotationSpeed * Time.deltaTime);
+    }
 
-        Quaternion targetRotation = Quaternion.LookRotation(direction);
-        Quaternion rotateTowards = Quaternion.RotateTowards(transform.rotation, targetRotation, aimRotationSpeed * Time.deltaTime);
+    public void CalculateDistance(Transform target)
+    {
+        float distance = Vector3.Distance(firePoint.position, target.position);
+        float timePrediction = distance / bulletSpeed;
 
-        transform.rotation = rotateTowards;
-        weapon.rotation = rotateTowards;
+        pursuit = new Pursuit(firePoint, target, timePrediction);
+        seek = new Seek(transform, target);
     }
 
 }

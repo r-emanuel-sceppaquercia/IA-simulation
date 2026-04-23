@@ -20,7 +20,6 @@ public class HuntingState<T> : States<T>
         this.hunterController = hunterController;
 
         this.from = hunterController.transform;
-        //this.target = target;
 
         this.hunterFSM = hunterFSM;
         this.restInput = restInput;
@@ -48,6 +47,7 @@ public class HuntingState<T> : States<T>
         {
             currentTarget = hunterController.LineOfSight.GetClosestTarget();
             hunterController.Weapon.ResetShootStats();
+            hunterController.Weapon.CalculateDistance(currentTarget);
         }
         else
         {
@@ -62,7 +62,7 @@ public class HuntingState<T> : States<T>
             Debug.Log("Shot to the target");
 
             hunterController.Weapon.Shoot();
-            hunterController.Model.ConsumeEnergy(20);
+            hunterController.Model.ConsumeEnergy(50, false);
             hunterController.View.ShootAnimation();
 
             currentTarget = null;

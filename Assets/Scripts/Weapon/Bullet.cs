@@ -1,35 +1,47 @@
 using UnityEngine;
 
-public class Bullet : MonoBehaviour
+public class Bullet : MonoBehaviour, IMove
 {
-    private Vector3 direction;
-    private float speed;
+    public float speed;
+    private float damage;
 
-    public void Init(Vector3 dir, float speed)
+    private Vector3 direction;
+    private Rigidbody rb;
+
+    private void Awake()
     {
-        this.direction = dir;
+        rb = GetComponent<Rigidbody>();
+    }
+
+    public void Init(Vector3 direction, float speed, float damage)
+    {
+        this.direction = direction;
         this.speed = speed;
+        this.damage = damage;
 
         Destroy(gameObject, 5f);
     }
 
     void Update()
     {
-        transform.position += direction * speed * Time.deltaTime;
+        Move(direction);
+    }
+
+    public void Move(Vector3 dir)
+    {
+        rb.linearVelocity = dir * speed;
     }
 
     private void OnTriggerEnter(Collider collider)
     {
         print("collision with: " + collider.gameObject.name);
 
-        var boidCollision = collider.GetComponent<Boid>();
+        var boid = collider.GetComponent<Boid>();
 
-        if (boidCollision != null)
+        if (boid != null)
         {
-            print("Colision with boid");
-
             Destroy(gameObject);
-            Destroy(boidCollision);
+            boid.ReceiveDamage(damage);
         }
     }
 }

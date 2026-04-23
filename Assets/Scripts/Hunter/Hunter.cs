@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Hunter : MonoBehaviour, IMove
+public class Hunter : MonoBehaviour
 {
     public HunterModel HunterModel { get; private set; }
     public HunterWeaponController hunterWeapon { get; private set; }
@@ -47,11 +47,6 @@ public class Hunter : MonoBehaviour, IMove
     private void Update()
     {
         //init.Execute();
-    }
-
-    void IMove.Move(Vector3 dir)
-    {
-        throw new System.NotImplementedException();
     }
 
     public void Rest()

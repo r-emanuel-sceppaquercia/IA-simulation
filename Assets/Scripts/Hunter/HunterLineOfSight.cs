@@ -5,6 +5,7 @@ public class HunterLOS : MonoBehaviour
 {
     [SerializeField] private float range;
     [SerializeField] private float angle;
+    [SerializeField] private float previousAngle;
     [SerializeField] private LayerMask obstacleMask;
     [SerializeField] private LayerMask targetMask;
 
@@ -20,6 +21,7 @@ public class HunterLOS : MonoBehaviour
     void Start()
     {
         InvokeRepeating(nameof(UpdateFOV), 0f, 0.2f);
+        previousAngle = angle;
     }
 
     void UpdateFOV()

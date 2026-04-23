@@ -3,10 +3,7 @@ using UnityEngine;
 public class HunterStateController : MonoBehaviour
 {
     private FSM<FSMState> hunterFsm;
-
     private HunterController hunterController;
-
-    [SerializeField] private Transform target;
 
     private void Awake()
     {
