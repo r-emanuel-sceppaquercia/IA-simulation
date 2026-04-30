@@ -44,11 +44,6 @@ public class Hunter : MonoBehaviour
         patrolDecisions.Add("StartWaypoint", 50);
     }
 
-    private void Update()
-    {
-        //init.Execute();
-    }
-
     public void Rest()
     {
         Debug.Log("Is resting");

@@ -30,7 +30,11 @@ public class HunterWeaponController : MonoBehaviour, IWeapon
 
     private void Update()
     {
-        Debug.DrawRay(firePoint.position, firePoint.forward * 50f, Color.red);
+        if (pursuit != null)
+        {
+            Debug.DrawRay(firePoint.position, pursuit.GetDir() * 50f, Color.red);
+        }
+
         Debug.DrawRay(transform.position, transform.forward * 50f, Color.magenta);
     }
 
@@ -47,6 +51,8 @@ public class HunterWeaponController : MonoBehaviour, IWeapon
     {
         aimTimer = 0f;
         hasShot = false;
+        pursuit = null;
+        seek = null;
     }
 
     public void AimDelay()
@@ -68,7 +74,7 @@ public class HunterWeaponController : MonoBehaviour, IWeapon
     public void CalculateDistance(Transform target)
     {
         float distance = Vector3.Distance(firePoint.position, target.position);
-        float timePrediction = distance / bulletSpeed;
+        float timePrediction = (distance / bulletSpeed) * 1.75f;
 
         pursuit = new Pursuit(firePoint, target, timePrediction);
         seek = new Seek(transform, target);

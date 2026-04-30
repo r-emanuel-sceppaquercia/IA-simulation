@@ -16,9 +16,9 @@ TagManager:
   - Enemy
   - Obstacle
   - Dead
-  - 
-  - 
-  - 
+  - Food
+  - Boid
+  - Hunter
   - 
   - 
   - 

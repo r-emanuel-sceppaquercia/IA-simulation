@@ -13,14 +13,6 @@ public class Boid : MonoBehaviour, IMove, IDamageable
         direction = transform.forward;
     }
 
-    void Update()
-    {
-        if (IsAlive)
-        {
-            Move(direction);
-        }
-    }
-
     public float GetSpeed() => speed;
 
     public void Move(Vector3 dir)

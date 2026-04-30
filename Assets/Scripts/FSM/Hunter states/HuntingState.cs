@@ -11,8 +11,6 @@ public class HuntingState<T> : States<T>
     private T restInput;
     private T patrolInput;
 
-    private ISteering steering;
-
     private Transform currentTarget;
 
     public HuntingState(HunterController hunterController, FSM<T> hunterFSM, T restInput, T patrolInput)
@@ -79,6 +77,9 @@ public class HuntingState<T> : States<T>
 
         // Reload gun
         hunterController.Weapon.Reload();
+
+        currentTarget = null;
+        hunterController.Weapon.ResetShootStats();
     }
 
     private void CheckStateTransition()
