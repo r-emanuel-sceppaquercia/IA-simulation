@@ -74,7 +74,7 @@ public class HunterWeaponController : MonoBehaviour, IWeapon
     public void CalculateDistance(Transform target)
     {
         float distance = Vector3.Distance(firePoint.position, target.position);
-        float timePrediction = (distance / bulletSpeed) * 1.75f;
+        float timePrediction = (distance / bulletSpeed) * 2f;
 
         pursuit = new Pursuit(firePoint, target, timePrediction);
         seek = new Seek(transform, target);

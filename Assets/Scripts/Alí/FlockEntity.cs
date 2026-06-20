@@ -24,10 +24,17 @@ public class FlockEntity : MonoBehaviour, ISteering, IFlockEntity
 
     private INode _rootNode;
 
+    private float _evadeTimer;
+    [SerializeField] private float _evadeDuration = 3f;
+
+    private Renderer[] _renderers;
+
     private void Awake()
     {
         var behaviors = GetComponents<IFlockBehaviour>();
         _behaviours = new List<IFlockBehaviour>(behaviors);
+
+        _renderers = GetComponentsInChildren<Renderer>();
     }
 
     private void Start()
@@ -45,7 +52,7 @@ public class FlockEntity : MonoBehaviour, ISteering, IFlockEntity
         INode questionBoids = new QuestionNode(AreBoidsNear, actionFlocking, actionWander);
 
         // Hunter near?
-        INode questionHunter = new QuestionNode(IsHunterNear, actionEvade, questionBoids);
+        INode questionHunter = new QuestionNode(ShouldEvade, actionEvade, questionBoids);
 
         // Burger near?
         _rootNode = new QuestionNode(IsFoodNear, actionArrive, questionHunter);
@@ -58,6 +65,14 @@ public class FlockEntity : MonoBehaviour, ISteering, IFlockEntity
         if (_rootNode != null)
         {
             _rootNode.Execute();
+        }
+    }
+
+    private void SetColor(Color color)
+    {
+        for (int i = 0; i < _renderers.Length; i++)
+        {
+            _renderers[i].material.color = color;
         }
     }
 
@@ -90,7 +105,24 @@ public class FlockEntity : MonoBehaviour, ISteering, IFlockEntity
             return true;
         }
 
-        _targetHunter = null;
+        //_targetHunter = null;
+        return false;
+    }
+
+    private bool ShouldEvade()
+    {
+        if (IsHunterNear())
+        {
+            _evadeTimer = _evadeDuration;
+            return true;
+        }
+
+        if (_evadeTimer > 0)
+        {
+            _evadeTimer -= Time.deltaTime;
+            return true;
+        }
+
         return false;
     }
 
@@ -102,6 +134,8 @@ public class FlockEntity : MonoBehaviour, ISteering, IFlockEntity
 
     private void ApplyFlocking()
     {
+        SetColor(Color.blue);
+
         Vector3 movementDirection = GetDir();
 
         movementDirection.y = 0f;
@@ -117,6 +151,8 @@ public class FlockEntity : MonoBehaviour, ISteering, IFlockEntity
     private void ApplyArrive()
     {
         if (_targetFood == null) return;
+
+        SetColor(Color.green);
 
         float distance = Vector3.Distance(transform.position, _targetFood.position);
 
@@ -141,6 +177,8 @@ public class FlockEntity : MonoBehaviour, ISteering, IFlockEntity
     {
         if (_targetHunter == null) return;
 
+        SetColor(Color.red);
+
         Evade evadeBehavior = new Evade(transform, _targetHunter, _boidStats.GetSpeed());
 
         Vector3 moveDir = evadeBehavior.GetDir();
@@ -156,6 +194,8 @@ public class FlockEntity : MonoBehaviour, ISteering, IFlockEntity
     private void ApplyWander()
     {
         Vector3 moveDir = _wanderBehavior.GetDir();
+
+        SetColor(Color.grey);
 
         _boidStats.Move(moveDir.normalized);
 
