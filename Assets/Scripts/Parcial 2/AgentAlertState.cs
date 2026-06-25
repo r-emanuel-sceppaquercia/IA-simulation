@@ -25,28 +25,18 @@ public class AgentAlertState<T> : States<T>
     {
         aStar = new AStar<PathNode>();
         agent.TargetNode = agent.PlayerClosestNode;
-        currentPath = aStar.CalculateAStar(agent.CurrentNode, agent.Satisfies, agent.GetCurrentNodeNeighbors, agent.GetCost, agent.Heuristic);
+        currentPath = aStar.CalculateAStar(agent.CurrentNode, agent.Satisfies, agent.GetCurrentNodeNeighbors, agent.GetCost, agent.HeuristicCost);
 
-        LayerMask mask = LayerMask.GetMask("Obstacle");
-        obstacleAvoidance = new ObstacleAvoidance(agent.transform, agent.Target.transform, 3f, 5f, mask);
+        obstacleAvoidance = new ObstacleAvoidance(agent.transform, agent.Target.transform, 3f, 5f, agent.ObstacleMask);
     }
 
     public override void Execute()
     {
-        // if the enemy is in sight we transition to chase mode
-        if (agent.EnemyInSight)
-        {
-            Debug.Log("Transition to chase mode");
-            fsm.Transition(AgentStates.CHASE);
-            return;
-        }
-
         // if the player last position is in sight we move to that position
         if (agent.TargetInSight(agent.LastPlayerPosition))
         {
             if (!isWaiting)
             {
-                // TODO: obstacle avoidance resuelto
                 Vector3 avoidDir = obstacleAvoidance.GetDir();
                 agent.Move(agent.LastPlayerPosition + avoidDir);
 
@@ -59,10 +49,11 @@ public class AgentAlertState<T> : States<T>
             }
             else
             {
-                // TODO: wait seconds and return to patrol resuelto --
+                // wait 2 seconds and return to patrol
                 waitTimer += Time.deltaTime;
-                if (waitTimer >= 2f) // waits 2
+                if (waitTimer >= 2f)
                 {
+                    agent.CurrentNode = agent.GetClosestNodeToPosition();
                     fsm.Transition(AgentStates.PATROL);
                 }
             }
@@ -73,18 +64,18 @@ public class AgentAlertState<T> : States<T>
             Debug.Log("Moving to target node");
             agent.MoveThroughPathNodes(currentPath);
         }
+
+        // if the enemy is in sight we transition to chase mode
+        if (agent.EnemyInSight)
+        {
+            fsm.Transition(AgentStates.CHASE);
+        }
     }
 
 
-    //test TEST
     public override void Sleep()
     {
         agent.ClearAlert();
         isWaiting = false;
-
-        //var currentNode = agent.TargetNode;
-        //agent.TargetNode = agent.CurrentNode;
-        //agent.CurrentNode = currentNode;
-        agent.CurrentNode = agent.GetClosestNodeToPosition();
     }
 }

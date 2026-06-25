@@ -6,7 +6,7 @@ public class PathfindingAgent : MonoBehaviour
 {
     [SerializeField] private float range;
     [SerializeField] private float angle;
-    [SerializeField] private LayerMask obstacleMask;
+    [field: SerializeField] public LayerMask ObstacleMask { get; private set; }
     [SerializeField] private LayerMask targetMask;
 
     [field: SerializeField] public PlayerController Target { get; private set; }
@@ -17,6 +17,8 @@ public class PathfindingAgent : MonoBehaviour
 
     [SerializeField] private List<PathNode> patrolRoute;
     public List<PathNode> PatrolRoute => patrolRoute;
+
+    private Heuristic heuristic;
 
     public bool IsAlerted { get; private set; }
     public PathNode PlayerClosestNode { get; private set; }
@@ -29,6 +31,7 @@ public class PathfindingAgent : MonoBehaviour
 
     private void Awake()
     {
+        heuristic = new Heuristic();
         CurrentNode = patrolRoute[0];
 
         MeshRenderer[] renderers = GetComponentsInChildren<MeshRenderer>();
@@ -45,12 +48,15 @@ public class PathfindingAgent : MonoBehaviour
 
     public bool Satisfies(PathNode current) => current == TargetNode;
     public List<PathNode> GetCurrentNodeNeighbors(PathNode current) => current.GetNeighbors();
-    public float GetCost(PathNode from, PathNode to) => Vector3.Distance(from.transform.position, to.transform.position);
-    public float Heuristic(PathNode node) => Vector3.Distance(node.transform.position, TargetNode.transform.position);
+    public float GetCost(PathNode current) => current.Cost;
+    public float HeuristicCost(PathNode node)
+    {
+        return heuristic.EuclideanHeuristic(node.transform.position, TargetNode.transform.position);
+    }
 
     private void UpdateFOV()
     {
-        var visibleTargets = lineOfSight.FindVisibleTargets(transform, range, angle, targetMask, obstacleMask);
+        var visibleTargets = lineOfSight.FindVisibleTargets(transform, range, angle, targetMask, ObstacleMask);
         var targetInRange = visibleTargets.Count > 0;
 
         EnemyInSight = targetInRange;
@@ -65,28 +71,9 @@ public class PathfindingAgent : MonoBehaviour
         }
     }
 
-    private PathNode GetClosestNode(Vector3 position)
-    {
-        PathNode closest = null;
-        float closestDistance = float.MaxValue;
-
-        foreach (var node in patrolRoute)
-        {
-            float sqrDistance = (node.transform.position - position).sqrMagnitude;
-
-            if (sqrDistance < closestDistance)
-            {
-                closestDistance = sqrDistance;
-                closest = node;
-            }
-        }
-
-        return closest;
-    }
-
     public bool TargetInSight(Vector3 targetPosition)
     {
-        return lineOfSight.IsInLineOfSightToPoint(transform, targetPosition, obstacleMask);
+        return lineOfSight.IsInLineOfSightToPoint(transform, targetPosition, ObstacleMask);
     }
 
     public void Alert(object[] data)
@@ -140,7 +127,25 @@ public class PathfindingAgent : MonoBehaviour
         }
     }
 
-    // otherwise the agents would go to nodes that are far and start from there, for some reason.
+    private PathNode GetClosestNode(Vector3 position)
+    {
+        PathNode closest = null;
+        float closestDistance = float.MaxValue;
+
+        foreach (var node in patrolRoute)
+        {
+            float sqrDistance = (node.transform.position - position).sqrMagnitude;
+
+            if (sqrDistance < closestDistance)
+            {
+                closestDistance = sqrDistance;
+                closest = node;
+            }
+        }
+
+        return closest;
+    }
+
     public PathNode GetClosestNodeToPosition()
     {
         PathNode[] allNodes = FindObjectsOfType<PathNode>();
@@ -158,7 +163,6 @@ public class PathfindingAgent : MonoBehaviour
             }
         }
 
-        // if no nodes close for some reason, go back directly to ur patrol nodes
         return closest != null ? closest : patrolRoute[0];
     }
 

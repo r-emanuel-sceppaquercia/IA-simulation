@@ -20,9 +20,7 @@ public class AgentChaseState<T> : States<T>
     public override void Awake()
     {
         steering = new Seek(agent.transform, agent.Target.transform);
-
-        LayerMask mask = LayerMask.GetMask("Obstacle");
-        obstacleAvoidance = new ObstacleAvoidance(agent.transform, agent.Target.transform, 3f, 5f, mask);
+        obstacleAvoidance = new ObstacleAvoidance(agent.transform, agent.Target.transform, 3f, 5f, agent.ObstacleMask);
     }
 
     public override void Execute()
@@ -32,20 +30,15 @@ public class AgentChaseState<T> : States<T>
         {
             waitTimer = 0f;
 
-            // TODO: obstacle avoidance resuelto --
-            Vector3 seekDir = steering.GetDir();
-            Vector3 avoidDir = obstacleAvoidance.GetDir();
-
-            // seeks and avoids
-            agent.MoveDirection((seekDir + avoidDir).normalized);
+            // seek and avoid
+            agent.MoveDirection(steering.GetDir() + obstacleAvoidance.GetDir());
         }
         else
         {
-            // TODO: if not in sight wait 3 to 5 seconds and return to patrol resuelto
-            agent.MoveDirection(Vector3.zero); // we stop em
+            // if not in sight wait 3 to 5 seconds and return to patrol
             waitTimer += Time.deltaTime;
 
-            if (waitTimer >= 3f) // waits 3 secs
+            if (waitTimer >= 3f)
             {
                 fsm.Transition(AgentStates.PATROL);
             }
@@ -54,9 +47,8 @@ public class AgentChaseState<T> : States<T>
 
     public override void Sleep()
     {
-        agent.Move(Vector3.zero);
         waitTimer = 0f;
-        //test TEST
+
         agent.CurrentNode = agent.GetClosestNodeToPosition();
     }
 }

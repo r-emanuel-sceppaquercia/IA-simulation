@@ -32,7 +32,7 @@ public class AgentPatrolState<T> : States<T>
 
         agent.TargetNode = agent.PatrolRoute[patrolIndex];
 
-        currentPath = aStar.CalculateAStar(agent.CurrentNode, agent.Satisfies, agent.GetCurrentNodeNeighbors, agent.GetCost, agent.Heuristic);
+        currentPath = aStar.CalculateAStar(agent.CurrentNode, agent.Satisfies, agent.GetCurrentNodeNeighbors, agent.GetCost, agent.HeuristicCost);
     }
 
     public override void Execute()
@@ -70,7 +70,7 @@ public class AgentPatrolState<T> : States<T>
             agent.TargetNode = agent.PatrolRoute[patrolIndex];
 
             // We recalculate the path to the next node and restart the path index to match the new current path
-            currentPath = aStar.CalculateAStar(agent.CurrentNode, agent.Satisfies, agent.GetCurrentNodeNeighbors, agent.GetCost, agent.Heuristic);
+            currentPath = aStar.CalculateAStar(agent.CurrentNode, agent.Satisfies, agent.GetCurrentNodeNeighbors, agent.GetCost, agent.HeuristicCost);
             currentPathIndex = 0;
         }
     }

@@ -8,7 +8,7 @@ public class AStar<T>
     public List<T> CalculateAStar(T startNode,
         Func<T, bool> satisfies,
         Func<T, List<T>> getNeighbors,
-        Func<T, T, float> getCost,
+        Func<T, float> getCost,
         Func<T, float> heuristic,
         int watchdog = 200)
     {
@@ -51,7 +51,7 @@ public class AStar<T>
                 if (visited.Contains(node))
                     continue;
 
-                var nodeCost = getCost(current, node);
+                var nodeCost = getCost(node);
                 var totalCost = accumulativeCost[current] + nodeCost;
 
                 if (accumulativeCost.ContainsKey(node) && accumulativeCost[node] < totalCost)
