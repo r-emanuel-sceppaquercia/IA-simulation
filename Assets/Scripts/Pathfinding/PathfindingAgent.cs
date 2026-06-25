@@ -120,8 +120,8 @@ public class PathfindingAgent : MonoBehaviour
     {
         direction.y = 0;
         transform.position += direction.normalized * speed * Time.deltaTime;
-
-        if (direction.sqrMagnitude > 0.001f)
+        // modified
+        if (direction.sqrMagnitude > 0.3f)
             transform.forward = Vector3.Lerp(transform.forward, direction.normalized, 10f * Time.deltaTime);
     }
 
@@ -138,6 +138,28 @@ public class PathfindingAgent : MonoBehaviour
                 path.RemoveAt(0);
             }
         }
+    }
+
+    // otherwise the agents would go to nodes that are far and start from there, for some reason.
+    public PathNode GetClosestNodeToPosition()
+    {
+        PathNode[] allNodes = FindObjectsOfType<PathNode>();
+
+        PathNode closest = null;
+        float closestDistance = float.MaxValue;
+
+        foreach (var node in allNodes)
+        {
+            float sqrDistance = (node.transform.position - transform.position).sqrMagnitude;
+            if (sqrDistance < closestDistance)
+            {
+                closestDistance = sqrDistance;
+                closest = node;
+            }
+        }
+
+        // if no nodes close for some reason, go back directly to ur patrol nodes
+        return closest != null ? closest : patrolRoute[0];
     }
 
     public void SetMove(List<PathfindingNode> path)
