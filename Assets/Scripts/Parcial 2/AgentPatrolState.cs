@@ -52,7 +52,7 @@ public class AgentPatrolState<T> : States<T>
 
         // If we reach the current node we set the current node as the next and increase the pathIndex
         // to point to the next node in the pathNode list (AStar path)
-        if (Vector3.Distance(agent.transform.position, nextNode.transform.position) < 0.1f)
+        if (Vector3.Distance(agent.transform.position, nextNode.transform.position) < 0.5f)
         {
             agent.CurrentNode = nextNode;
             currentPathIndex++;
