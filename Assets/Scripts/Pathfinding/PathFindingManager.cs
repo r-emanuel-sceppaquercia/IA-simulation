@@ -107,7 +107,7 @@ public class PathFindingManager : MonoBehaviour
                     agent.SetMove(aStar.CalculateAStar(startNode, goalNode, heuristicType));
                     break;
                 case TypeOfPath.ThetaStar:
-                    agent.SetMove(thetaStar.CalculateThetaStar(startNode, goalNode, heuristicType, InLineOfSight));
+                    //agent.SetMove(thetaStar.CalculateThetaStar(startNode, goalNode, heuristicType, InLineOfSight));
                     break;
                 case TypeOfPath.ThetaBasedOnAStar:
                 default: break;

@@ -8,18 +8,21 @@ public class PathNode : MonoBehaviour
 
     [field: SerializeField] public float Cost { get; private set; }
 
+    private MeshRenderer meshRenderer;
+
     private void Start()
     {
-        var meshRenderer = GetComponentInChildren<MeshRenderer>();
-        meshRenderer.material.color = Color.red;
+        meshRenderer = GetComponentInChildren<MeshRenderer>();
 
         Cost = 1;
     }
 
-    public List<PathNode> GetNeighbors()
+    public void ChangeColor(Color color)
     {
-        return neighbours;
+        meshRenderer.material.color = color;
     }
+
+    public List<PathNode> GetNeighbors() => neighbours;
 
     private void OnDrawGizmos()
     {

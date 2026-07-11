@@ -148,7 +148,7 @@ public class PathfindingAgent : MonoBehaviour
 
     public PathNode GetClosestNodeToPosition()
     {
-        PathNode[] allNodes = FindObjectsOfType<PathNode>();
+        PathNode[] allNodes = FindObjectsByType<PathNode>(FindObjectsSortMode.None);
 
         PathNode closest = null;
         float closestDistance = float.MaxValue;

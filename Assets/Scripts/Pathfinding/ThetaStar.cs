@@ -3,16 +3,16 @@ using System.Collections.Generic;
 
 public class ThetaStar
 {
-    public List<PathfindingNode> CalculateThetaStar(
-        PathfindingNode start,
-        PathfindingNode goal,
+    public List<PathNode> CalculateThetaStar(
+        PathNode start,
+        PathNode goal,
         HeuristicType heuristicType,
-        Func<PathfindingNode, PathfindingNode, bool> inSight)
+        Func<PathNode, PathNode, bool> inSight)
     {
-        PriorityQueue<PathfindingNode> pending = new PriorityQueue<PathfindingNode>();
+        PriorityQueue<PathNode> pending = new PriorityQueue<PathNode>();
 
-        Dictionary<PathfindingNode, PathfindingNode> parents = new();
-        Dictionary<PathfindingNode, float> accumulativeCost = new();
+        Dictionary<PathNode, PathNode> parents = new();
+        Dictionary<PathNode, float> accumulativeCost = new();
 
 
         pending.Enqueue(start, 0);
@@ -25,7 +25,7 @@ public class ThetaStar
 
             if (current == goal)
             {
-                var path = new List<PathfindingNode>();
+                var path = new List<PathNode>();
 
                 while (current != start)
                 {
@@ -38,12 +38,9 @@ public class ThetaStar
                 return path;
             }
 
-            foreach (var node in current.GetNeigbors)
+            foreach (var node in current.GetNeighbors())
             {
-                if (node.Block)
-                    continue;
-
-                PathfindingNode currentParent = current;
+                PathNode currentParent = current;
                 if (parents.ContainsKey(current) && inSight(parents[current], node))
                     currentParent = parents[current];
 
@@ -78,7 +75,7 @@ public class ThetaStar
 
         }
 
-        return new List<PathfindingNode>();
+        return new List<PathNode>();
     }
 
     public List<PathfindingNode> CalculateThetaStarBasedOnAStar(PathfindingNode start, PathfindingNode goal, HeuristicType heuristicType, Func<PathfindingNode, PathfindingNode, bool> inSight)
