@@ -23,13 +23,6 @@ public class AgentLocomotion : MonoBehaviour
     private ObstacleAvoidance _obstacleAvoidance;
     private Transform _currentLocomotionTarget;
 
-    private Vector3? _overrideDirection = null;
-
-    public void SetMovementOverride(Vector3? direction)
-    {
-        _overrideDirection = direction;
-    }
-
     private void Awake()
     {
         _fsmController = GetComponent<AgentFSMController>();
@@ -38,16 +31,11 @@ public class AgentLocomotion : MonoBehaviour
 
     private void Update()
     {
-       // if we have a direction to follow, we use it, otherwise we use Seek. 
-       //Am I escaping?
-        if (_overrideDirection == null)
-        {
-            //if I'm not, I need a target to follow / seek
-            if (_fsmController.currentTarget == null) return;
+        //if I don't have a target to follow / seek
+        if (_fsmController.currentTarget == null) return;
 
-            // if i have an objective, i do seek and avoidance
-            UpdateSteeringBehaviors(_fsmController.currentTarget);
-        }
+        // if i have an objective, i do seek and avoidance
+        UpdateSteeringBehaviors(_fsmController.currentTarget);
 
         Vector3 finalDirection = CalculateMovementDirection();
         ApplyMovement(finalDirection);
@@ -65,19 +53,13 @@ public class AgentLocomotion : MonoBehaviour
 
     private Vector3 CalculateMovementDirection()
     {
-        // If we're fleeing/escaping
-        if (_overrideDirection.HasValue)
-        {
-            // combining the flee with avoidance 
-            Vector3 fleeDir = _overrideDirection.Value;
-            if (_obstacleAvoidance != null) fleeDir += _obstacleAvoidance.GetDir() * 0.5f;
-            return fleeDir.normalized;
-        }
-
-        // IF we're following or pursuing
+        // IF we're following, pursuing or fleeing to base
         Vector3 direction = Vector3.zero;
+
         if (_seekBehavior != null) direction += _seekBehavior.GetDir() * seekWeight;
+
         if (_flockEntity != null && _fsmController.useFlocking) direction += _flockEntity.Direction * flockWeight;
+
         if (_obstacleAvoidance != null) direction += _obstacleAvoidance.GetDir();
 
         return direction.normalized;

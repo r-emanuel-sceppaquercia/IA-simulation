@@ -7,13 +7,15 @@ public enum AgentManadaStates
     FLEE
 }
 
-[RequireComponent(typeof(EntityStats))] 
+[RequireComponent(typeof(EntityStats))]
 public class AgentFSMController : MonoBehaviour
 {
     private FSM<AgentManadaStates> _fsm;
-    
+
     public EntityStats stats { get; private set; }
-    public PathfindingAgent myLeader; 
+
+               // UPDATE a
+    public LeaderController myLeader;
 
     public Transform currentTarget { get; set; }
     public bool useFlocking { get; set; }
@@ -32,7 +34,6 @@ public class AgentFSMController : MonoBehaviour
         var combatState = new AgentCombatState(this, _fsm);
         var fleeState = new AgentFleeState(this, _fsm);
 
-        // Defining the transitions
         followState.AddTransition(AgentManadaStates.COMBAT, combatState);
         followState.AddTransition(AgentManadaStates.FLEE, fleeState);
 
