@@ -5,6 +5,13 @@ public class AgentCombatState : States<AgentManadaStates>
     private AgentFSMController _controller;
     private FSM<AgentManadaStates> _fsm;
 
+    // added combat config -------
+    private float _attackRange = 2.5f;    // Max distance to attack
+    private float _attackCooldown = 1.5f; // Seconds between attacks
+    private float _damage = 10f;          // Damage dealt per attack
+
+    private float _lastAttackTime = 0f;   // Internal timer to handle cooldown
+
     public AgentCombatState(AgentFSMController controller, FSM<AgentManadaStates> fsm)
     {
         _controller = controller;
@@ -13,25 +20,69 @@ public class AgentCombatState : States<AgentManadaStates>
 
     public override void Execute()
     {
-        // Transition, in case of low life I have to escape/flee
-        if (_controller.stats.IsHealthLow())
+        // If the agent or the leader has low HP, flee to the hideout
+        if (_controller.stats.IsHealthLow() || (_controller.myLeader != null && _controller.myLeader.Model.OnLowHp()))
         {
             _fsm.Transition(AgentManadaStates.FLEE);
             return;
         }
 
-        // Transition in case Leader lost track of the other leader / target, so we go back to following him
-        if (_controller.myLeader == null || !_controller.myLeader.EnemyInSight || _controller.myLeader.Target == null)
+        // If the leader lost sight of enemies or died, go back to following
+        if (_controller.myLeader == null || !_controller.myLeader.LineOfSight.EnemiesInRange())
         {
             _fsm.Transition(AgentManadaStates.FOLLOW_LEADER);
             return;
         }
 
-        // go straight to the enemy / target
-        _controller.currentTarget = _controller.myLeader.Target.transform;
-        _controller.useFlocking = false;
+        // Get nearest enemy detected by the leader
+        Transform enemy = _controller.myLeader.LineOfSight.GetClosestTarget();
+        if (enemy != null)
+        {
+            _controller.currentTarget = enemy;
+            _controller.useFlocking = false; 
 
-        // TO DO: damage logic
+            // Calculate actual distance to the enemy
+            float distanceToEnemy = Vector3.Distance(_controller.transform.position, enemy.position);
+
+            // If within attack range, stop and start attacking
+            if (distanceToEnemy <= _attackRange)
+            {
+                // Check if enough time has passed since the last attack (Cooldown)
+                if (Time.time >= _lastAttackTime + _attackCooldown)
+                {
+                    PerformAttack(enemy);
+                    _lastAttackTime = Time.time; // Reset the attack timer
+                }
+            }
+        }
+    }
+
+    private void PerformAttack(Transform enemy)
+    {
+        // Try to deal damage using the interface
+        IDamageable targetStats = enemy.GetComponent<IDamageable>();
+
+        if (targetStats != null)
+        {
+            targetStats.ReceiveDamage(_damage);
+            Debug.Log($"{_controller.gameObject.name} attacked for {_damage} damage!");
+        }
+        else
+        {
+            // Fallback in case the other leader hasn't implemented IDamageable yet
+            LeaderModel leaderTarget = enemy.GetComponent<LeaderModel>();
+            if (leaderTarget != null)
+            {
+                Debug.LogWarning("Enemy leader hit, but it doesn't implement IDamageable yet!");
+            }
+        }
+
+        // Trigger the attack animation
+        Animator anim = _controller.GetComponentInChildren<Animator>();
+        if (anim != null)
+        {
+            anim.SetTrigger("Attack"); //"Attack" Animation - Animatorrrrrrrrrrrrrrrrrrrrrrrr
+        }
     }
 
     public override void Sleep() { }

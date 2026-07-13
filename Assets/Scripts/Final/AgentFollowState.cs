@@ -13,21 +13,21 @@ public class AgentFollowState : States<AgentManadaStates>
 
     public override void Execute()
     {
-        // If low life, I escape/flee
-        if (_controller.stats.IsHealthLow())
+        // if low life, escape
+        if (_controller.stats.IsHealthLow() || (_controller.myLeader != null && _controller.myLeader.Model.OnLowHp()))
         {
             _fsm.Transition(AgentManadaStates.FLEE);
             return;
         }
 
-        // If the leader detected an enemy, combat
-        if (_controller.myLeader != null && _controller.myLeader.EnemyInSight)
+        // if leader detects an enemy, we attack
+        if (_controller.myLeader != null && _controller.myLeader.LineOfSight.EnemiesInRange())
         {
             _fsm.Transition(AgentManadaStates.COMBAT);
             return;
         }
 
-        // Follow the leader
+        // follow the leader
         if (_controller.myLeader != null)
         {
             _controller.currentTarget = _controller.myLeader.transform;
