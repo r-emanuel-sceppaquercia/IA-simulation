@@ -7,22 +7,27 @@ public enum AgentManadaStates
     FLEE
 }
 
-[RequireComponent(typeof(EntityStats))]
 public class AgentFSMController : MonoBehaviour
 {
     private FSM<AgentManadaStates> _fsm;
 
-    public EntityStats stats { get; private set; }
+    public AgentLocomotion Locomotion { get; private set; }
+    public AgentView View { get; private set; }
+    public LeaderLineOfSight LineOfSight { get; private set; }
+    public EntityStats Stats { get; private set; }
 
-               // UPDATE a
-    public LeaderController myLeader;
+    public LeaderController MyLeader { get; private set; }
 
     public Transform currentTarget { get; set; }
+    public Transform Hideout { get; private set; }
     public bool useFlocking { get; set; }
 
     private void Awake()
     {
-        stats = GetComponent<EntityStats>();
+        Locomotion = GetComponent<AgentLocomotion>();
+        View = GetComponent<AgentView>();
+        LineOfSight = GetComponent<LeaderLineOfSight>();
+        Stats = GetComponent<EntityStats>();
         SetUpFSM();
     }
 

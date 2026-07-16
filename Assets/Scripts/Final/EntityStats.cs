@@ -14,6 +14,9 @@ public class EntityStats : MonoBehaviour, IDamageable
     [SerializeField] private float staminaDrainRate = 15f;
     [SerializeField] private float staminaRegenRate = 20f;
 
+    [Header("Stamina Config")]
+    [field: SerializeField] public float Speed { get; private set; }
+
     // Events in case we wanna add UI
     public event Action OnDeath = delegate { };
     public event Action OnDamageTaken = delegate { };

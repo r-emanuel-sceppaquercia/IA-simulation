@@ -12,34 +12,42 @@ public class AgentCombatState : States<AgentManadaStates>
 
     private float _lastAttackTime = 0f;   // Internal timer to handle cooldown
 
+    private Transform enemy;
+
     public AgentCombatState(AgentFSMController controller, FSM<AgentManadaStates> fsm)
     {
         _controller = controller;
         _fsm = fsm;
     }
 
+    public override void Awake()
+    {
+        _controller.View.ChangeColor(Color.red);
+
+        // Get enemy from lineOfSight
+        enemy = _controller.MyLeader.LineOfSight.GetClosestTarget();
+    }
+
     public override void Execute()
     {
         // If the agent or the leader has low HP, flee to the hideout
-        if (_controller.stats.IsHealthLow() || (_controller.myLeader != null && _controller.myLeader.Model.OnLowHp()))
+        if (_controller.Stats.IsHealthLow() || (_controller.MyLeader != null && _controller.MyLeader.Model.OnLowHp()))
         {
             _fsm.Transition(AgentManadaStates.FLEE);
             return;
         }
 
         // If the leader lost sight of enemies or died, go back to following
-        if (_controller.myLeader == null || !_controller.myLeader.LineOfSight.EnemiesInRange())
+        if (_controller.MyLeader == null || !_controller.MyLeader.LineOfSight.EnemiesInRange())
         {
             _fsm.Transition(AgentManadaStates.FOLLOW_LEADER);
             return;
         }
 
-        // Get nearest enemy detected by the leader
-        Transform enemy = _controller.myLeader.LineOfSight.GetClosestTarget();
         if (enemy != null)
         {
             _controller.currentTarget = enemy;
-            _controller.useFlocking = false; 
+            _controller.useFlocking = false;
 
             // Calculate actual distance to the enemy
             float distanceToEnemy = Vector3.Distance(_controller.transform.position, enemy.position);
